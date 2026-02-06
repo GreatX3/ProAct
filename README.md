@@ -6,13 +6,13 @@ We compare **ProAct** against leading closed-source models and open-source model
 
 - Visualizations on 2048
 
-  <a href="https://github.com/GreatX3/ProAct/blob/main/demos/2048_demo.mp4">
+  <a href="https://github.com/GreatX3/ProAct/raw/main/demos/2048_demo.mp4">
     <img src="demos/2048_demo.png" width="600" alt="Watch the demo">
   </a>
 
 - Visualizations on Sokoban
 
-  <a href="https://github.com/GreatX3/ProAct/blob/main/demos/sokoban_demo.mp4">
+  <a href="https://github.com/GreatX3/ProAct/raw/main/demos/sokoban_demo.mp4">
     <img src="demos/sokoban_demo.png" width="600" alt="Watch the demo">
   </a>
 
