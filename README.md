@@ -1,5 +1,17 @@
 # ProAct: Agentic Lookahead in Interactive Environments
 
+## 🎥 Demos
+
+We compare **ProAct** against leading closed-source models and open-source models on two  long-horizon interactive environments (i.e., 2048 and Sokoban). ProAct exhibits superior foresight and strategic planning capabilities in interactive environments.
+
+- Visualizations on 2048
+
+  ![Watch the demo [<sup>2</sup>](demos/2048_demo.png)](https://github.com/GreatX3/ProAct/blob/main/demos/2048_demo.mp4)
+
+- Visualizations on Sokoban
+
+  ![Watch the demo [<sup>2</sup>](demos/sokoban_demo.png)](https://github.com/GreatX3/ProAct/blob/main/demos/sokoban_demo.mp4)
+
 ## 🚀 Inference & Testing
 
 The testing pipeline consists of three steps: downloading the model, deploying it with vLLM, and running the evaluation script.
@@ -54,4 +66,18 @@ You can verify the calculation logic of MC-Critic on the **2048** environment im
 python3 twentyFortyEightVariantEnv.py
 ```
 
+## 📜 Citation
 
+If you find this project useful in your research, please cite our paper:
+
+```<BIBTEX>
+@misc{yu2026proactagenticlookaheadinteractive,
+      title={ProAct: Agentic Lookahead in Interactive Environments}, 
+      author={Yangbin Yu and Mingyu Yang and Junyou Li and Yiming Gao and Feiyu Liu and Yijun Yang and Zichuan Lin and Jiafei Lyu and Yicheng Liu and Zhicong Lu and Deheng Ye and Jie Jiang},
+      year={2026},
+      eprint={2602.05327},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2602.05327}, 
+}
+```
