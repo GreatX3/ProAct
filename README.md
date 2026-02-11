@@ -5,6 +5,7 @@ ProAct: Agentic Lookahead in Interactive Environments
 <p align="center">
 | <a href="https://arxiv.org/abs/2602.05327"><b>Paper</b></a> | <a href="https://huggingface.co/biang889/ProAct"><b>🤗 Models</b></a> | 
 </p>
+
 ## 📖 Introduction
 
 We introduce **ProAct**, a novel framework designed to empower Large Language Model (LLM) agents with accurate, multi-turn lookahead reasoning capabilities in interactive environments. Existing agents often struggle with long-horizon planning due to "simulation drift," where minor internal prediction errors accumulate over time.
