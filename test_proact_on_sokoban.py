@@ -9,14 +9,14 @@ import random
 import json
 import concurrent.futures
 import re
-from sokobanEnv import SokobanVariantEnv
+from envs.sokobanEnv import SokobanVariantEnv
 import fcntl
 
 
 def get_prompt_template(env_name):
     if env_name == "extra":
         env_name = "origin"
-    with open("prompt_sokoban.json", 'r') as f:
+    with open("envs/prompt_sokoban.json", 'r') as f:
         prompt_template = json.load(f)
     return prompt_template[env_name]["system_prompt_template"], prompt_template[env_name]["user_prompt_template"]
 
@@ -44,7 +44,7 @@ def process_single_item(env_name, episode_id, save_dir):
     os.makedirs(f"{save_dir}/{env_name}", exist_ok=True)
     totalscore_save_path = f"{save_dir}/{env_name}/score_summary.txt"
 
-    map_file_path = './levels_random.txt'
+    map_file_path = 'envs/levels_random.txt'
     game_env = SokobanVariantEnv(map_file_path=map_file_path, variant=env_name, max_steps_episode=200)
     start_level_idx = 1
     end_level_idx = 6
@@ -61,7 +61,6 @@ def process_single_item(env_name, episode_id, save_dir):
         system_prompt = system_prompt_template
 
         traj_dump_str = f"System Prompt=\n{system_prompt}\n"
-        # 将traj_dump_str写入traj_save_path
         with open(traj_save_path, "a") as f:
             f.write(traj_dump_str)
 

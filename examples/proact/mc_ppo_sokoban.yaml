@@ -1,0 +1,194 @@
+experiment_name: mc_ppo_sokoban
+trial_name: trial0
+
+seed: 1
+total_train_epochs: 10
+tokenizer_path: ${actor.path}
+async_training: false
+
+max_turns: 200
+eval_steps: 2000
+save_steps: 2000
+eval_trajs_per_gpu: 1
+game_name: sokoban
+enable_thinking: false
+test_variant_games: "extra,action,symbol"
+variant_games_prompt_template_path: envs/prompt_sokoban.json 
+train_turns_per_gpu: 8
+fix_test_env_seed: true
+use_mc_critic: true
+mc_value_weight: 1
+turn_gamma: 0.95
+turn_lambda: 0
+
+cluster:
+  n_nodes: 1
+  n_gpus_per_node: 8
+  fileroot: /tmp/areal/experiments
+  name_resolve:
+    type: nfs
+    nfs_record_root: /tmp/areal/experiments
+
+allocation_mode: sglang.d4p1t1+d4p1t1
+
+rollout:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  max_concurrent_rollouts: 64
+  queue_size: null
+  consumer_batch_size: ${rollout.train_groups_per_gpu}
+  max_head_offpolicyness: 2
+  enable_rollout_tracing: false
+  train_groups_per_gpu: 1
+
+gconfig:
+  n_samples: 1
+  min_new_tokens: 0
+  max_new_tokens: 2048
+  greedy: false
+  temperature: 1.0
+
+actor:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: Qwen/Qwen3-4B-Instruct-2507
+  init_from_scratch: false
+  disable_dropout: true
+  gradient_checkpointing: true
+  dtype: bfloat16
+  mb_spec:
+    max_tokens_per_mb: 32768
+  optimizer:
+    type: adam
+    lr: 1e-6
+    weight_decay: 0.017
+    beta1: 0.9
+    beta2: 0.999
+    eps: 1e-8
+    lr_scheduler_type: constant
+    gradient_clipping: 1.0
+    warmup_steps_proportion: 0.001
+  backend: fsdp
+  group_size: ${gconfig.n_samples}
+  eps_clip: 0.4
+  temperature: ${gconfig.temperature}
+  reward_scaling: 1.0
+  reward_bias: 0.0
+  reward_clip: 10000.0
+  kl_ctl: 0.0
+  ppo_n_minibatches: 1
+  recompute_logprob: true
+  use_decoupled_loss: true
+  behav_imp_weight_cap: 5.0
+  dynamic_sampling: false
+  # reward_norm:
+  #   mean_level: group
+  #   std_level: group
+  #   group_size: ${gconfig.n_samples}
+  adv_norm:
+    mean_level: batch
+    std_level: batch
+  max_new_tokens: ${gconfig.max_new_tokens}
+  n_epoches: 10
+
+
+critic:
+  is_critic: true
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: ${actor.path}
+  init_from_scratch: false
+  disable_dropout: true
+  dtype: ${actor.dtype}
+  eps_clip: 0.5
+  ppo_n_minibatches: ${actor.ppo_n_minibatches}
+  mask_no_eos_with_zero: ${actor.mask_no_eos_with_zero}
+  mb_spec:
+    max_tokens_per_mb: 10240
+  backend: fsdp
+  optimizer:
+    type: adam
+    lr: 1e-5
+    weight_decay: 0.017
+    beta1: 0.9
+    beta2: 0.999
+    eps: 1e-8
+    lr_scheduler_type: constant
+    gradient_clipping: 1.0
+    warmup_steps_proportion: 0.001
+  n_epoches: ${actor.n_epoches}
+
+ref:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: ${actor.path}
+  init_from_scratch: false
+  disable_dropout: true
+  dtype: ${actor.dtype}
+  mb_spec:
+    max_tokens_per_mb: 32768
+  optimizer: null
+  backend: fsdp
+
+# SGLang
+sglang:
+  model_path: ${actor.path}
+  random_seed: ${seed}
+  skip_tokenizer_init: true
+  dtype: ${actor.dtype}
+  max_running_requests: null
+  context_length: 32768
+  mem_fraction_static: 0.8
+
+# datasets
+train_dataset:
+  path: openai/gsm8k
+  type: rl
+
+
+valid_dataset:
+  path: openai/gsm8k
+  type: rl
+
+# Utilities
+saver:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: null
+
+recover:
+  mode: disabled
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: 3600
+
+evaluator:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: null
+
+stats_logger:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  wandb:
+    mode: disabled
+  tensorboard:
+    path: /tmp/areal/tensorboard/${experiment_name}/${trial_name}
+
+launcher:
+  inference_server_cpus_per_gpu: 4
+  inference_server_mem_per_gpu: 32768
+  trainer_cpus_per_gpu: 4
+  trainer_mem_per_gpu: 32768
+  trainer_env_vars: "NCCL_SOCKET_IFNAME=bond1,NCCL_NET_PLUGIN=none,NCCL_PLUGIN_P2P=none"
+  inference_server_env_vars: "NCCL_SOCKET_IFNAME=bond1,NCCL_NET_PLUGIN=none,NCCL_PLUGIN_P2P=none"

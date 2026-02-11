@@ -9,12 +9,12 @@ import random
 import json
 import concurrent.futures
 import re
-from twentyFortyEightVariantEnv import TwentyFortyEightVariantEnv
+from envs.twentyFortyEightVariantEnv import TwentyFortyEightVariantEnv
 import fcntl
 
 
 def get_prompt_template(env_name):
-    with open("prompt_2048.json", 'r') as f:
+    with open("envs/prompt_2048.json", 'r') as f:
         prompt_template = json.load(f)
     return prompt_template[env_name]["system_prompt_template"], prompt_template[env_name]["user_prompt_template"]
 
